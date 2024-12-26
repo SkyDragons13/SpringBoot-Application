@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<h1>Welcome, <span th:text="${username}">User</span>!</h1>
+<h2>Home - SUCCESS</h2>
+<table>
+    <thead>
+    <tr>
+        <th>User Info</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td th:text="${username}">Authenticated User</td>
+    </tr>
+    </tbody>
+</table>
+<a href="/logout">Logout</a>
+</body>
+</html>

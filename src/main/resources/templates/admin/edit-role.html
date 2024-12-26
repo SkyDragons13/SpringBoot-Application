@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <title>Edit Role</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mx-auto p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+            Edit Role:
+            <form th:action="@{/admin/roles/{id}/edit(id=${role.id})}" method="post" class="inline-block">
+                <!-- Input field for editing the role name -->
+                <input type="text" name="name" th:value="${role.name}"
+                       class="border rounded px-2 py-1 text-gray-700" required />
+
+                <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 ml-2">
+                    Save
+                </button>
+            </form>
+        </h1>
+
+        <table class="min-w-full table-auto border-collapse">
+            <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2 text-left font-medium text-gray-700">HTTP Method</th>
+                <th class="px-4 py-2 text-left font-medium text-gray-700">URL</th>
+                <th class="px-4 py-2 text-left font-medium text-gray-700">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="permission : ${permissions}" class="border-t">
+                <td class="px-4 py-2" th:text="${permission.httpMethod}"></td>
+                <td class="px-4 py-2" th:text="${permission.url}"></td>
+                <td class="px-4 py-2">
+                    <!-- Edit Permission Form -->
+                    <form th:action="@{/admin/permissions/{id}/edit(id=${permission.id})}" method="get" class="inline-block mr-2">
+                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Edit</button>
+                    </form>
+                    <!-- Delete Permission Form -->
+                    <form th:action="@{/admin/permissions/{id}/delete(id=${permission.id})}" method="post" class="inline-block">
+                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Create Permission Button -->
+        <a th:href="@{/admin/roles/{id}/edit/permissions/create(id=${role.id})}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            Create Permission
+        </a>
+    </div>
+</div>
+</body>
+</html>

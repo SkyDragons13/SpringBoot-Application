@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <title>Edit User</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container mx-auto p-8">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">
+            Edit User: <span th:text="${user.username}"></span>
+        </h1>
+
+        <!-- Roles Table -->
+        <table class="min-w-full table-auto border-collapse">
+            <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2 text-left font-medium text-gray-700">Role Name</th>
+                <th class="px-4 py-2 text-center font-medium text-gray-700">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="role : ${user.roles}" class="border-t hover:bg-gray-50">
+                <td class="px-4 py-2" th:text="${role.name}"></td>
+                <td class="px-4 py-2 text-center space-x-2">
+                    <!-- View Role -->
+                    <form th:action="@{/admin/roles/{id}/edit(id=${role.id})}" method="get" class="inline-block">
+                        <button type="submit"
+                                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 focus:outline-none">
+                            View Role
+                        </button>
+                    </form>
+                    <!-- Delete Role -->
+                    <form th:action="@{/admin/users/{userId}/update/{roleId}/delete(userId=${user.id}, roleId=${role.id})}" method="post" class="inline-block">
+                        <button type="submit"
+                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 focus:outline-none">
+                            Remove
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Add Role -->
+        <div class="mt-6">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Add Role</h2>
+            <form th:action="@{/admin/users/{id}/update/add(id=${user.id})}" method="post" class="space-y-4">
+                <div>
+                    <label for="role" class="block text-sm font-bold text-gray-700">Select Role:</label>
+                    <select id="role" name="roleId"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit"
+                            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none">
+                        Add Role
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
