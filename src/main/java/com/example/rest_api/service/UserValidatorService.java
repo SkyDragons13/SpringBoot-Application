@@ -1,7 +1,7 @@
 package com.example.rest_api.service;
 
 
-import com.example.rest_api.database.model.UserEntity;
+import com.example.rest_api.database.model.users.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

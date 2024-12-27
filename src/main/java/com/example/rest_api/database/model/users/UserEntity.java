@@ -1,8 +1,7 @@
-package com.example.rest_api.database.model;
+package com.example.rest_api.database.model.users;
 
 import com.example.rest_api.security.AuthenticatedUser;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

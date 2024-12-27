@@ -1,6 +1,6 @@
 package com.example.rest_api.security.config;
 
-import com.example.rest_api.database.model.Role;
+import com.example.rest_api.database.model.users.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,30 +1,24 @@
 package com.example.rest_api.service;
 
-import com.example.rest_api.database.model.UserEntity;
-import com.example.rest_api.database.repository.RoleRepository;
-import com.example.rest_api.database.repository.UserRepository;
+import com.example.rest_api.database.model.users.RoleEntity;
+import com.example.rest_api.database.model.users.UserEntity;
+import com.example.rest_api.database.repository.users.RoleRepository;
+import com.example.rest_api.database.repository.users.UserRepository;
 import com.example.rest_api.security.AuthenticatedUser;
 import com.example.rest_api.security.PasswordGeneratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -104,4 +98,21 @@ public class UserService extends OidcUserService implements UserDetailsService {
     public UserEntity findById(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found with ID: " + id));}
+    @Transactional(transactionManager = "usersTransactionManager")
+    public void removeRoleFromUser(Long userId, Long roleId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        RoleEntity role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        // Remove the role from the user
+        if (user.getRoles().contains(role)) {
+            user.getRoles().remove(role);
+            role.getUsers().remove(user);
+
+            // Save the changes in both entities
+            userRepository.save(user);
+            roleRepository.save(role);
+        }
+    }
 }

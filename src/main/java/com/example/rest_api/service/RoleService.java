@@ -1,7 +1,7 @@
 package com.example.rest_api.service;
 
-import com.example.rest_api.database.model.RoleEntity;
-import com.example.rest_api.database.repository.RoleRepository;
+import com.example.rest_api.database.model.users.RoleEntity;
+import com.example.rest_api.database.repository.users.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

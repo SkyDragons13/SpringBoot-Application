@@ -1,6 +1,6 @@
 package com.example.rest_api.controller;
 
-import com.example.rest_api.database.model.UserEntity;
+import com.example.rest_api.database.model.users.UserEntity;
 import com.example.rest_api.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

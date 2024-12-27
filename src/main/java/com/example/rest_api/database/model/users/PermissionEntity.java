@@ -1,4 +1,4 @@
-package com.example.rest_api.database.model;
+package com.example.rest_api.database.model.users;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
@@ -12,7 +12,9 @@ public class PermissionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name="http_method")
     private String httpMethod;
+    @Column(name="url")
     private String url;
 
     @ManyToOne
