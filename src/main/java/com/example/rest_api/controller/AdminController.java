@@ -108,23 +108,23 @@ public class AdminController {
         model.addAttribute("role", role);
         model.addAttribute("httpMethods", getHttpMethods());
         model.addAttribute("urls", urlService.getAllUrls());
-        model.addAttribute("permission", new PermissionEntity());
         return "admin/create-permission";
     }
 
     @PostMapping("/roles/{id}/edit/permissions/create")
     public String createPermission(@PathVariable Long id,
-                                   @ModelAttribute PermissionEntity permission,
                                    @RequestParam String httpMethod,
                                    @RequestParam String url) {
 
         RoleEntity role = roleService.findById(id);
+        PermissionEntity permission=new PermissionEntity();
         permission.setRole(role);
         permission.setHttpMethod(httpMethod);
         permission.setUrl(url);
-
         permissionService.save(permission);
+        role.getPermissions().add(permission);
 
+        roleService.save(role);
         return "redirect:/admin/roles/" + id + "/edit";
     }
 

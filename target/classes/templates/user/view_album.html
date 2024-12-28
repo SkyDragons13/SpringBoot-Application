@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user_layout.html}">
+
+<head>
+    <title th:text="${album.name} + ' - Images'">Album Images</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container mx-auto p-8">
+        <!-- Album Title -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-6" th:text="${album.name}"></h1>
+
+        <!-- Admin Actions -->
+        <div th:if="${isAdmin}" class="mb-6">
+            <form th:action="@{/home/album/{name}/view(name=${album.name})}" th:method="delete" class="mb-4">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Delete Album
+                </button>
+            </form>
+
+            <form th:action="@{/home/album/{name}/add-image(name=${album.name})}" method="post" enctype="multipart/form-data" class="mb-4" >
+                <label for="newImage" class="block text-sm font-medium text-gray-700">Add Image</label>
+                <input type="file" id="newImage" name="file" class="block w-full mb-2" required>
+                <input type="text" name="name" placeholder="Image Name" class="block w-full mb-2 p-2 border rounded" required>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Add Image
+                </button>
+            </form>
+        </div>
+
+        <!-- List of images -->
+        <div class="images flex flex-wrap gap-6">
+            <div th:each="image : ${album.images}" class="image-container w-1/4 p-4 border rounded">
+                <img th:src="@{/home/album/{name}/images/{id}(name=${album.name}, id=${image.id})}" alt="Image" class="w-full h-48 object-cover mb-2">
+                <span th:text="${image.name}" class="block text-sm text-gray-500"></span>
+
+                <!-- Delete Image Button for Admin -->
+                <form th:if="${isAdmin}" th:action="@{/home/album/{name}/images/{id}(name=${album.name}, id=${image.id})}" method="post" th:method="delete" class="mt-2">
+                    <button type="submit" class="text-red-500 hover:underline">Delete Image</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Back to Albums Link -->
+        <a href="/home" class="block mt-6 text-blue-500 hover:underline">Back to Albums</a>
+    </div>
+</div>
+</body>
+
+</html>

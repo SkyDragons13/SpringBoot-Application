@@ -1,6 +1,8 @@
 package com.example.rest_api.service;
 
+import com.example.rest_api.database.model.users.PermissionEntity;
 import com.example.rest_api.database.model.users.RoleEntity;
+import com.example.rest_api.database.model.users.UserEntity;
 import com.example.rest_api.database.repository.users.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,4 +41,21 @@ public class RoleService {
     public void deleteById(Long id) {
         roleRepository.deleteById(id);
     }
+    public RoleEntity createRoleWithPermissions(String roleName, List<String> permissions, String resourcePath) {
+        RoleEntity role = new RoleEntity();
+        role.setName(roleName);
+        RoleEntity savedRole=roleRepository.save(role);
+        for (String permission : permissions)
+        {
+            PermissionEntity perm = new PermissionEntity();
+            perm.setHttpMethod(permission);
+            perm.setUrl(resourcePath);
+            perm.setRole(savedRole);
+            savedRole.getPermissions().add(perm);
+        }
+
+        return roleRepository.save(savedRole);
+    }
+
+
 }

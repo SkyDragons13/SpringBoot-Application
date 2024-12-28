@@ -9,6 +9,7 @@ import com.example.rest_api.security.PasswordGeneratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -98,6 +99,10 @@ public class UserService extends OidcUserService implements UserDetailsService {
     public UserEntity findById(Long id){
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found with ID: " + id));}
+    public UserEntity findByEmail(String email)
+    {
+        return userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("Email not found with email: "+email));
+    }
     @Transactional(transactionManager = "usersTransactionManager")
     public void removeRoleFromUser(Long userId, Long roleId) {
         UserEntity user = userRepository.findById(userId)
@@ -114,5 +119,9 @@ public class UserService extends OidcUserService implements UserDetailsService {
             userRepository.save(user);
             roleRepository.save(role);
         }
+    }
+    public  boolean hasRole(UserEntity user , String roleName)
+    {
+        return user.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
     }
 }

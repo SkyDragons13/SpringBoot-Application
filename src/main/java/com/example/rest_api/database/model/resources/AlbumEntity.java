@@ -20,10 +20,13 @@ public class AlbumEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false,unique = true)
     private String name;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private Collection<ImageEntity> images = new ArrayList<>();
+
+    @Transient
+    private boolean canAccess;
 
 }

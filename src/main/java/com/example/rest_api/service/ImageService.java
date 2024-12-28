@@ -23,4 +23,13 @@ public class ImageService {
     public ImageEntity findById(Long id){
         return this.imageRepository.findById(id).
                 orElseThrow(() -> new RuntimeException("Image not  not found with ID: " + id));}
+
+    public void delete(ImageEntity image)
+    {
+        this.imageRepository.delete(image);
+    }
+    public void save(ImageEntity image)
+    {
+        this.imageRepository.save(image);
+    }
 }
