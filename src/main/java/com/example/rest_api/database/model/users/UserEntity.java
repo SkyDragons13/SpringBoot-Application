@@ -63,4 +63,6 @@ public class UserEntity implements UserDetails {
         /* Does set only the basic details */
         return new AuthenticatedUser(this.email, this.password, this.getAuthorities());
     }
+    @Transient
+    private boolean hasRole;
 }

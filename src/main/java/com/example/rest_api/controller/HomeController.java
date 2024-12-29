@@ -34,6 +34,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/home")
@@ -91,7 +92,7 @@ public class HomeController {
     }
 
     @PostMapping("/create")
-    public String createAlbum(@ModelAttribute AlbumEntity album, BindingResult result, Model model)
+    public String createAlbum(@ModelAttribute AlbumEntity album, Model model)
     {
         try {
             if (albumService.findByName(album.getName()) != null) {
@@ -167,6 +168,12 @@ public class HomeController {
 
         return new ResponseEntity<>(image.getImage(), headers, HttpStatus.OK);
     }
+    @GetMapping("/album/{name}/add-image")
+    public String addImageForm(@PathVariable String name, Model model) {
+        AlbumEntity album = albumService.findByName(name);
+        model.addAttribute("album", album);
+        return "user/add_image";
+    }
     @PostMapping("/album/{name}/add-image")
     public String addImage(@PathVariable String name, @RequestParam("file") MultipartFile file, @RequestParam("name") String imageName, Principal principal) {
         try {
@@ -196,6 +203,66 @@ public class HomeController {
         albumService.save(album);
         return "redirect:/home/album/"+album.getName()+"/view";
     }
+    @GetMapping("/album/{name}/manage-users")
+    public String manageUsers(@PathVariable String name,
+                              @RequestParam(name = "searchQuery", required = false) String searchQuery,
+                              @RequestParam(name = "selectedUser", required = false) String selectedUserEmail,
+                              Model model) {
+
+        AlbumEntity album = albumService.findByName(name);
+        List<UserEntity> users = userService.findAll();
+
+        users=users.stream().filter(user->!user.getEmail().equals(loggedUser.getEmail())).collect(Collectors.toList());
+
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            users = users.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(searchQuery.toLowerCase())
+                            || user.getEmail().toLowerCase().contains(searchQuery.toLowerCase()))
+                    .toList();
+        }
+
+        String albumRoleName = name + "_Album";
+        for (UserEntity user : users) {
+            user.setHasRole(userService.hasRole(user, albumRoleName));
+        }
+
+        UserEntity selectedUser = null;
+        if (selectedUserEmail != null) {
+            selectedUser = users.stream()
+                    .filter(user -> user.getEmail().equals(selectedUserEmail))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        model.addAttribute("album", album);
+        model.addAttribute("users", users);
+        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("selectedUser", selectedUser);
+        return "user/manage_users";
+    }
+
+    @PostMapping("/album/{name}/add-role")
+    public String addRoleToUser(@PathVariable String name, @RequestParam String email) {
+        UserEntity user = userService.findByEmail(email);
+        RoleEntity role = roleService.findByName(name + "_Album").get();
+        user.getRoles().add(role);
+        role.getUsers().add(user);
+        userService.save(user);
+        return "redirect:/home/album/" + name + "/manage-users";
+    }
+
+    @Transactional(transactionManager = "usersTransactionManager")
+    @PostMapping("/album/{name}/remove-role")
+    public String removeRoleFromUser(@PathVariable String name, @RequestParam String email) {
+        UserEntity user = userService.findByEmail(email);
+        RoleEntity role = roleService.findByName(name + "_Album").get();
+        user.getRoles().remove(role);
+        role.getUsers().remove(user);
+        userService.save(user);
+        roleService.save(role);
+        return "redirect:/home/album/" + name + "/manage-users";
+    }
+
 
     private boolean checkUserAccess(UserEntity user,AlbumEntity album)
     {

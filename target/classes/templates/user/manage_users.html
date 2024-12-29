@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user_layout.html}">
+
+<head>
+    <title th:text="'Manage Users for ' + ${album.name}">Manage Users</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container mx-auto p-8">
+        <!-- Page Title -->
+        <h1 class="text-2xl font-bold text-gray-800 mb-6" th:text="'Manage Users for ' + ${album.name}"></h1>
+
+        <!-- Search Bar -->
+        <form th:action="@{/home/album/{name}/manage-users(name=${album.name})}" method="get" class="mb-6">
+            <input type="text" name="searchQuery" th:value="${searchQuery}" placeholder="Search by name or email"
+                   class="block w-full p-2 border rounded mb-4" />
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Search</button>
+        </form>
+
+        <!-- User Dropdown -->
+        <div class="mb-6">
+            <label for="userDropdown" class="block text-sm font-medium text-gray-700">Select a User</label>
+            <select id="userDropdown"
+                    class="block w-full mb-4 p-2 border rounded">
+                <option value="" disabled selected>-- Select a User --</option>
+                <option th:each="user : ${users}" th:value="${user.email}" th:text="${user.username}"
+                        th:data-has-role="${user.hasRole}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Add/Delete role for the selected user -->
+        <div id="roleButtons" class="mt-4" style="display: none;">
+            <p id="selectedUserLabel" class="font-bold text-gray-800"></p>
+
+            <form id="addRoleForm" style="display: none;"
+                  th:action="@{/home/album/{name}/add-role(name=${album.name})}" method="post">
+                <input type="hidden" id="addRoleEmail" name="email">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Add Role
+                </button>
+            </form>
+
+            <form id="removeRoleForm" style="display: none;"
+                  th:action="@{/home/album/{name}/remove-role(name=${album.name})}" method="post">
+                <input type="hidden" id="removeRoleEmail" name="email">
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Delete Role
+                </button>
+            </form>
+        </div>
+
+        <!-- Back to Album Link -->
+        <a th:href="@{/home/album/{name}/view(name=${album.name})}"
+           class="block mt-6 text-blue-500 hover:underline">
+            Back to Album
+        </a>
+    </div>
+    <script>
+        document.getElementById('userDropdown').addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const userEmail = selectedOption.value;
+            const username = selectedOption.textContent;
+            const hasRole = selectedOption.getAttribute('data-has-role') === 'true';
+
+            // Update role buttons visibility
+            document.getElementById('roleButtons').style.display = 'block';
+            document.getElementById('selectedUserLabel').textContent = 'Selected User: ' + username;
+
+            // Update forms for role management
+            if (hasRole) {
+                document.getElementById('addRoleForm').style.display = 'none';
+                document.getElementById('removeRoleForm').style.display = 'block';
+                document.getElementById('removeRoleEmail').value = userEmail;
+            } else {
+                document.getElementById('removeRoleForm').style.display = 'none';
+                document.getElementById('addRoleForm').style.display = 'block';
+                document.getElementById('addRoleEmail').value = userEmail;
+            }
+        });
+    </script>
+
+</div>
+</body>
+</html>
